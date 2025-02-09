@@ -51,13 +51,15 @@ The target variable is `shares`, representing the number of times the article wa
 
 This section details the steps taken to understand the dataset's underlying patterns, distributions, and potential anomalies.
 
+
 ### 2.1. Target Variable Analysis
 Here is the distribution of the target variable `shares` using a histogram.
 ![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_5_0.png)
 It can be seen that the distribution is severely right-skewed. We will apply a log transformation to the target variable to handle the skewness.
-
 ![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_6_0.png)
-After applying the log transformation, the distribution is much more normal. We will apply a log transformation to the target variable to handle the skewness in feature engineering part.
+We also apply a box-cox transformation to the target variable.
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_7_1.png)
+After applying the two transformations, the distribution of the target variable is much more normal. We will discuss the results of the two transformations in the following sections.
 
 
 ### 2.2. Correlation Analysis
@@ -81,15 +83,114 @@ We also indentify the most correlated feature pairs.
 ```
 
 
-### 2.3. (not yet finished)
+### 2.3. Data Channel Analysis
+Here, we analyze the impact of different data channels on the number of article shares.
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_11_0.png)
+As shown in the chart, articles in the Lifestyle channel have the highest average number of shares, while those in the World channel have the lowest. The Socmed channel also has a relatively high number of shares, second only to the Lifestyle channel.
+
+### 2.4. Article Length Analysis
+Here, we analyze the relationship between article length and the number of shares. 
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_12_0.png)
+From the plot, we can see that most articles have a length between 0 and 2000, with relatively low share counts. When the article length is shorter (0-1000), the share count exhibits greater dispersion, with some articles achieving extremely high shares. As the article length increases (>2000), articles with high shares become less frequent.
+
+Therefore, we conclude that there is no clear linear relationship between article length and the number of shares. Although the data suggests that shorter articles are more likely to receive higher shares, there are still cases where longer articles achieve high share counts.
 
 
+### 2.5. Selected Features Analysis
+We select the following features we believe are important for predicting the number of shares. We draw boxplots for these features.
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_13_0.png)
+Among them, n_tokens_content shows the greatest variation and has many outliers. In contrast, num_hrefs, num_imgs, and num_videos are relatively stable.
+
+We also use IQR and Z-score to detect outliers in n_tokens_content.
+```
+    Number of outliers using IQR: 4541
+    Number of outliers using Z-score: 308
+```
+
+
+### 2.6. Feature Correlation Analysis
+We compute the correlation between the target variable and the selected features. The log_shares and boxcox_shares are also considered.
+
+Highest correlated features:
+```
+    shares                        1.000000
+    log_shares                    0.510181
+    boxcox_shares                 0.416169
+    kw_avg_avg                    0.110413
+    LDA_03                        0.083771
+    kw_max_avg                    0.064306
+    self_reference_avg_sharess    0.057789
+    self_reference_min_shares     0.055958
+    self_reference_max_shares     0.047115
+    num_hrefs                     0.045404
+    kw_avg_max                    0.044686
+    kw_min_avg                    0.039551
+    num_imgs                      0.039388
+    global_subjectivity           0.031604
+    kw_avg_min                    0.030406
+    Name: shares, dtype: float64
+```
+
+Lowest correlated features:
+```
+    rate_negative_words             -0.005183
+    weekday_is_tuesday              -0.007941
+    weekday_is_thursday             -0.008833
+    LDA_01                          -0.010183
+    data_channel_is_bus             -0.012376
+    rate_positive_words             -0.013241
+    data_channel_is_tech            -0.013253
+    LDA_04                          -0.016622
+    data_channel_is_entertainment   -0.017006
+    min_negative_polarity           -0.019297
+    max_negative_polarity           -0.019300
+    average_token_length            -0.022007
+    avg_negative_polarity           -0.032029
+    data_channel_is_world           -0.049497
+    LDA_02                          -0.059163
+    Name: shares, dtype: float64
+```
+
+Based on our analysis, the following variables are likely to be important in predicting shares: log_shares, boxcox_shares, kw_avg_avg, LDA_03, kw_max_avg, self_reference_avg_sharess. Additionally, num_hrefs (number of hyperlinks) and num_imgs (number of images) also show a certain level of correlation and may have some value for modeling.
+
+
+### 2.7. High vs. Low Shares Comparison with Hyperlinks
+
+Next, we compare the number of hyperlinks (num_hrefs) between High Shares and Low Shares to analyze whether the number of hyperlinks affects the number of article shares.
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_17_0.png)
+The analysis results show that the median and IQR of both groups (High Shares & Low Shares) are similar. Additionally, there are many outliers, and the distribution of num_hrefs in high-share and low-share articles is nearly identical.
+
+Therefore, we conclude that the number of hyperlinks is likely not a major factor influencing the number of article shares.
+
+
+### 2.8. Shares Category Analysis
+To better analyze how different number of shares interact with other features, we create a new categorical variable shares_category based on the quantiles of the shares. 4 categories are created: Low, Medium-Low, Medium-High, High. We can notice that the number of articles in each category is quite balanced.
+```
+    shares_category
+    Medium-Low     10152
+    Medium-High     9932
+    Low             9930
+    High            9630
+    Name: count, dtype: int64
+```
+
+We draw two charts. The first chart displays the mean values of different features across various share categories (Low, Medium-Low, Medium-High, High). 
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_19_1.png)
+
+Since log_shares has the highest correlation with shares, it helps reduce data skewness. kw_avg_avg and kw_max_avg show relatively high correlations with shares, indicating that keyword weight might significantly influence shares. num_hrefs and num_imgs were identified as potentially influential variables during the EDA process. Although the previous step suggested that their impact might be limited, they still hold some value and need further verification.
+
+From the analysis, we observe that log_shares increases as shares_category rises, confirming that log_shares is an important transformation of shares. kw_avg_avg and kw_max_avg show a relatively stable increasing trend across different categories, suggesting that keyword influence is likely associated with the number of shares. In contrast, num_hrefs and num_imgs have smaller values and show no significant trend changes, indicating a weaker impact.
+
+The second chart presents the mean log_shares across different share categories.
+![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_19_2.png)
+We can conclude that log_shares gradually increases with shares_category, demonstrating that the logarithmic transformation effectively captures the distribution trend of shares. Additionally, log_shares in high shares_category is significantly higher than in low shares_category, further proving the effectiveness of log_shares as a key variable.
 
 
 ## 3. Feature Engineering
 There is no missing value in the dataset. So we will focus on handling the skewness of the features.
 
 ### 3.1. Data Conversion
+
 We convert the binary categorical features to boolean type.
 Here is the list of the 14 selected features:
 ```
