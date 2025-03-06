@@ -14,18 +14,18 @@ The primary objectives of this project are to:
 
 1. Identify the key features in the Online News Popularity dataset that are significantly correlated with the number of article shares.
 2. Analyze the impact of various features (like sentiment polarity, keywords, publication timing) on article sharing.
-3. Build multiple predictive models that can accurately forecast the number of shares an article will receive based on its features.
+3. Build multiple classification models that can accurately forecast the group of shares an article will receive based on its features.
 4. Evaluate different models and compare their performance.
 
 
 ## Methods:
 
-We utilized the Online News Popularity dataset from the UCI Machine Learning Repository, which contains data on 39,797 articles published on Mashable.  Our analysis involved Exploratory Data Analysis (EDA) to understand data patterns and relationships, followed by feature engineering to handle feature that can help improve the performance of the model. Then, we built multiple models including XGBoost, Random Forest, Neural Network (not yet decided). We evaluated the performance of the models using R-squared, Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE).
+We utilized the Online News Popularity dataset from the UCI Machine Learning Repository, which contains data on 39,797 articles published on Mashable. Our analysis involved Exploratory Data Analysis (EDA) to understand data patterns and relationships, followed by feature engineering to handle feature that can help improve the performance of the model. Then, we built multiple models including XGBoost, Random Forest, Neural Network (not yet decided). We evaluated the performance of the models using R-squared, Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE).
 
 
 # Problem Statement
 
-The explosion of online news sources and the growing dependence on social media for news consumption have created a highly competitive environment for content creators and publishers. Predicting the popularity of online news articles, especially the number of times an article is shared on social media, is a big challenge. The complex interaction of various factors influencing an article's virality, making the prediction difficult. This project aims to address this challenge by analyzing the Online News Popularity dataset to identify key predictors of article shares and develop a predictive, useful model.
+The explosion of online news sources and the growing dependence on social media for news consumption have created a highly competitive environment for content creators and publishers. Predicting the popularity of online news articles, especially the number of times an article is shared on social media, is a big challenge. The complex interaction of various factors influencing an article's virality, making the prediction difficult. This project aims to address this challenge by analyzing the Online News Popularity dataset to identify key predictors of article shares and develop a useful classification model. 
 
 # Research Objectives
 
@@ -52,7 +52,437 @@ The target variable is `shares`, representing the number of times the article wa
 This section details the steps taken to understand the dataset's underlying patterns, distributions, and potential anomalies.
 
 
-### 2.1. Target Variable Analysis
+### 2.1. Data Overview
+Our dataset has been well preprocessed that there is no missing value in the dataset. We will focus on finding patterns of features. 
+You can see all features from the original dataset are numeric. It should be noted that we transformed target variabe "Shares" into object variable to fulfill the classification need. There is a new feature call "followers". We will explain that in Feature Engineering part.
+Here are the first 5 rows of the dateset. 
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>n_tokens_title</th>
+      <th>n_tokens_content</th>
+      <th>n_unique_tokens</th>
+      <th>n_non_stop_words</th>
+      <th>n_non_stop_unique_tokens</th>
+      <th>num_hrefs</th>
+      <th>num_self_hrefs</th>
+      <th>num_imgs</th>
+      <th>num_videos</th>
+      <th>average_token_length</th>
+      <th>num_keywords</th>
+      <th>data_channel_is_lifestyle</th>
+      <th>data_channel_is_entertainment</th>
+      <th>data_channel_is_bus</th>
+      <th>data_channel_is_socmed</th>
+      <th>data_channel_is_tech</th>
+      <th>data_channel_is_world</th>
+      <th>kw_min_min</th>
+      <th>kw_max_min</th>
+      <th>kw_avg_min</th>
+      <th>kw_min_max</th>
+      <th>kw_max_max</th>
+      <th>kw_avg_max</th>
+      <th>kw_min_avg</th>
+      <th>kw_max_avg</th>
+      <th>kw_avg_avg</th>
+      <th>self_reference_min_shares</th>
+      <th>self_reference_max_shares</th>
+      <th>self_reference_avg_sharess</th>
+      <th>weekday_is_monday</th>
+      <th>weekday_is_tuesday</th>
+      <th>weekday_is_wednesday</th>
+      <th>weekday_is_thursday</th>
+      <th>weekday_is_friday</th>
+      <th>weekday_is_saturday</th>
+      <th>weekday_is_sunday</th>
+      <th>is_weekend</th>
+      <th>LDA_00</th>
+      <th>LDA_01</th>
+      <th>LDA_02</th>
+      <th>LDA_03</th>
+      <th>LDA_04</th>
+      <th>global_subjectivity</th>
+      <th>global_sentiment_polarity</th>
+      <th>global_rate_positive_words</th>
+      <th>global_rate_negative_words</th>
+      <th>rate_positive_words</th>
+      <th>rate_negative_words</th>
+      <th>avg_positive_polarity</th>
+      <th>min_positive_polarity</th>
+      <th>max_positive_polarity</th>
+      <th>avg_negative_polarity</th>
+      <th>min_negative_polarity</th>
+      <th>max_negative_polarity</th>
+      <th>title_subjectivity</th>
+      <th>title_sentiment_polarity</th>
+      <th>abs_title_subjectivity</th>
+      <th>abs_title_sentiment_polarity</th>
+      <th>shares</th>
+      <th>followers</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>12</td>
+      <td>219</td>
+      <td>0.663594</td>
+      <td>1.0</td>
+      <td>0.815385</td>
+      <td>4</td>
+      <td>2</td>
+      <td>1</td>
+      <td>0</td>
+      <td>4.680365</td>
+      <td>5</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>496.0</td>
+      <td>496.0</td>
+      <td>496.000000</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.500331</td>
+      <td>0.378279</td>
+      <td>0.040005</td>
+      <td>0.041263</td>
+      <td>0.040123</td>
+      <td>0.521617</td>
+      <td>0.092562</td>
+      <td>0.045662</td>
+      <td>0.013699</td>
+      <td>0.769231</td>
+      <td>0.230769</td>
+      <td>0.378636</td>
+      <td>0.100000</td>
+      <td>0.7</td>
+      <td>-0.350000</td>
+      <td>-0.600</td>
+      <td>-0.200000</td>
+      <td>0.500000</td>
+      <td>-0.187500</td>
+      <td>0.000000</td>
+      <td>0.187500</td>
+      <td>Low</td>
+      <td>High</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>9</td>
+      <td>255</td>
+      <td>0.604743</td>
+      <td>1.0</td>
+      <td>0.791946</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>4.913725</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.799756</td>
+      <td>0.050047</td>
+      <td>0.050096</td>
+      <td>0.050101</td>
+      <td>0.050001</td>
+      <td>0.341246</td>
+      <td>0.148948</td>
+      <td>0.043137</td>
+      <td>0.015686</td>
+      <td>0.733333</td>
+      <td>0.266667</td>
+      <td>0.286915</td>
+      <td>0.033333</td>
+      <td>0.7</td>
+      <td>-0.118750</td>
+      <td>-0.125</td>
+      <td>-0.100000</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.500000</td>
+      <td>0.000000</td>
+      <td>Low</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>9</td>
+      <td>211</td>
+      <td>0.575130</td>
+      <td>1.0</td>
+      <td>0.663866</td>
+      <td>3</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+      <td>4.393365</td>
+      <td>6</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>918.0</td>
+      <td>918.0</td>
+      <td>918.000000</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.217792</td>
+      <td>0.033334</td>
+      <td>0.033351</td>
+      <td>0.033334</td>
+      <td>0.682188</td>
+      <td>0.702222</td>
+      <td>0.323333</td>
+      <td>0.056872</td>
+      <td>0.009479</td>
+      <td>0.857143</td>
+      <td>0.142857</td>
+      <td>0.495833</td>
+      <td>0.100000</td>
+      <td>1.0</td>
+      <td>-0.466667</td>
+      <td>-0.800</td>
+      <td>-0.133333</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.500000</td>
+      <td>0.000000</td>
+      <td>Medium</td>
+      <td>Medium</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>9</td>
+      <td>531</td>
+      <td>0.503788</td>
+      <td>1.0</td>
+      <td>0.665635</td>
+      <td>9</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>4.404896</td>
+      <td>7</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.028573</td>
+      <td>0.419300</td>
+      <td>0.494651</td>
+      <td>0.028905</td>
+      <td>0.028572</td>
+      <td>0.429850</td>
+      <td>0.100705</td>
+      <td>0.041431</td>
+      <td>0.020716</td>
+      <td>0.666667</td>
+      <td>0.333333</td>
+      <td>0.385965</td>
+      <td>0.136364</td>
+      <td>0.8</td>
+      <td>-0.369697</td>
+      <td>-0.600</td>
+      <td>-0.166667</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>0.500000</td>
+      <td>0.000000</td>
+      <td>Low</td>
+      <td>Reprinted</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>13</td>
+      <td>1072</td>
+      <td>0.415646</td>
+      <td>1.0</td>
+      <td>0.540890</td>
+      <td>19</td>
+      <td>19</td>
+      <td>20</td>
+      <td>0</td>
+      <td>4.682836</td>
+      <td>7</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>0.0</td>
+      <td>545.0</td>
+      <td>16000.0</td>
+      <td>3151.157895</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0.028633</td>
+      <td>0.028794</td>
+      <td>0.028575</td>
+      <td>0.028572</td>
+      <td>0.885427</td>
+      <td>0.513502</td>
+      <td>0.281003</td>
+      <td>0.074627</td>
+      <td>0.012127</td>
+      <td>0.860215</td>
+      <td>0.139785</td>
+      <td>0.411127</td>
+      <td>0.033333</td>
+      <td>1.0</td>
+      <td>-0.220192</td>
+      <td>-0.500</td>
+      <td>-0.050000</td>
+      <td>0.454545</td>
+      <td>0.136364</td>
+      <td>0.045455</td>
+      <td>0.136364</td>
+      <td>Low</td>
+      <td>Low</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+### 2.2. Target Variable Analysis
+
+We mentioned that we divided articles into four groups based on their shares. The counts among groups are imbalanced and we will handle them later.
+
+#### Shares Distribution
+| Category | Count | Percentage(%) |
+|----------|-------|--------------|
+| Low | 18,490 | 46.64 |
+| Medium | 13,075 | 32.98 |
+| High | 6,079 | 15.33 |
+| Viral | 2,000 | 5.04 |
+
+We also calculated their proportion.
+#### Followers Distribution
+| Category | Count |
+|----------|-------|
+| Low | 15,234 |
+| Unknown | 9,297 |
+| Medium | 8,200 |
+| Reprinted | 3,747 |
+| Extremely Low | 2,163 |
+
+
+
 Here is the distribution of the target variable `shares` using a histogram.
 ![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_5_0.png)
 It can be seen that the distribution is severely right-skewed. We will apply a log transformation to the target variable to handle the skewness.
@@ -62,7 +492,7 @@ We also apply a box-cox transformation to the target variable.
 After applying the two transformations, the distribution of the target variable is much more normal. We will discuss the results of the two transformations in the following sections.
 
 
-### 2.2. Correlation Analysis
+### 2.3. Correlation Analysis
 A correlation heatmap of numerical features is computed and visualized using a heatmap.
 ![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_8_0.png)
 From the heatmap, we can see that there are some features that are highly correlated with each other. For the linear models, we will remove the features that are highly correlated with each other to avoid multicollinearity.
@@ -83,7 +513,7 @@ We also indentify the most correlated feature pairs.
 ```
 
 
-### 2.3. Data Channel Analysis
+### 2.4. Data Channel Analysis
 Here, we analyze the impact of different data channels on the number of article shares.
 ![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_11_0.png)
 As shown in the chart, articles in the Lifestyle channel have the highest average number of shares, while those in the World channel have the lowest. The Socmed channel also has a relatively high number of shares, second only to the Lifestyle channel.
