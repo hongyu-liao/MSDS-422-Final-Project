@@ -1,4 +1,4 @@
-# Online News Popularity Data Analysis and Feature Engineering
+# Online News Popularity Data Analysis
 
 This project uses the [Online News Popularity](https://archive.ics.uci.edu/ml/datasets/online+news+popularity) dataset from the UCI Machine Learning Repository to analyze the factors that drive the popularity (shares) of news articles.
 
