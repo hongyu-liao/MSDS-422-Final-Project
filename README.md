@@ -58,19 +58,6 @@ You can see all features from the original dataset are numeric. It should be not
 Here are the first 5 rows of the dateset. 
 
 <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -461,7 +448,7 @@ Here are the first 5 rows of the dateset.
 
 ### 2.2. Target Variable Analysis
 
-We mentioned that we divided articles into four groups based on their shares. The counts among groups are imbalanced and we will handle them later.
+Here we divided articles into four groups based on their shares. 
 
 #### Shares Distribution
 | Category | Count | Percentage(%) |
@@ -481,52 +468,175 @@ We also calculated their proportion.
 | Reprinted | 3,747 |
 | Extremely Low | 2,163 |
 
+We plot pie chart and histogram to show the distribution intuitively.
+
+![png](Final%20notebook%20images/Article%20Shares%20Category%20Distribution%20Pie%20Chart.png)
+
+![png](Final%20notebook%20images/Article%20Shares%20Category%20Distribution%20Histogram.png)
+Most of the articles do not really have a high number of views, which contributes to the long-tailed character of this data. Such an imbalanced dataset is the biggest factor that affects the performance of the model in this study.
 
 
-Here is the distribution of the target variable `shares` using a histogram.
-![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_5_0.png)
-It can be seen that the distribution is severely right-skewed. We will apply a log transformation to the target variable to handle the skewness.
-![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_6_0.png)
-We also apply a box-cox transformation to the target variable.
-![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_7_1.png)
-After applying the two transformations, the distribution of the target variable is much more normal. We will discuss the results of the two transformations in the following sections.
+### 2.3. Content Feature Analysis
+One of the major characteristics of our selected dataset is that its features comprehensively and detailedly summarize the content of the articles. This includes word count statistics, sentiment analysis, and keyword analysis, etc. In this section we will focus on analyzing word count statistics.
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>std</th>
+      <th>min</th>
+      <th>25%</th>
+      <th>50%</th>
+      <th>75%</th>
+      <th>max</th>
+      <th>cv</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>n_tokens_title</th>
+      <td>39644.0</td>
+      <td>10.398749</td>
+      <td>2.114037</td>
+      <td>2.0</td>
+      <td>9.000000</td>
+      <td>10.000000</td>
+      <td>12.000000</td>
+      <td>23.000000</td>
+      <td>0.203297</td>
+    </tr>
+    <tr>
+      <th>n_tokens_content</th>
+      <td>39644.0</td>
+      <td>546.514731</td>
+      <td>471.107508</td>
+      <td>0.0</td>
+      <td>246.000000</td>
+      <td>409.000000</td>
+      <td>716.000000</td>
+      <td>8474.000000</td>
+      <td>0.862022</td>
+    </tr>
+    <tr>
+      <th>n_unique_tokens</th>
+      <td>39644.0</td>
+      <td>0.548216</td>
+      <td>3.520708</td>
+      <td>0.0</td>
+      <td>0.470870</td>
+      <td>0.539226</td>
+      <td>0.608696</td>
+      <td>701.000000</td>
+      <td>6.422122</td>
+    </tr>
+    <tr>
+      <th>num_hrefs</th>
+      <td>39644.0</td>
+      <td>10.883690</td>
+      <td>11.332017</td>
+      <td>0.0</td>
+      <td>4.000000</td>
+      <td>8.000000</td>
+      <td>14.000000</td>
+      <td>304.000000</td>
+      <td>1.041193</td>
+    </tr>
+    <tr>
+      <th>num_self_hrefs</th>
+      <td>39644.0</td>
+      <td>3.293638</td>
+      <td>3.855141</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>3.000000</td>
+      <td>4.000000</td>
+      <td>116.000000</td>
+      <td>1.170481</td>
+    </tr>
+    <tr>
+      <th>num_imgs</th>
+      <td>39644.0</td>
+      <td>4.544143</td>
+      <td>8.309434</td>
+      <td>0.0</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>4.000000</td>
+      <td>128.000000</td>
+      <td>1.828603</td>
+    </tr>
+    <tr>
+      <th>num_videos</th>
+      <td>39644.0</td>
+      <td>1.249874</td>
+      <td>4.107855</td>
+      <td>0.0</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+      <td>91.000000</td>
+      <td>3.286616</td>
+    </tr>
+    <tr>
+      <th>average_token_length</th>
+      <td>39644.0</td>
+      <td>4.548239</td>
+      <td>0.844406</td>
+      <td>0.0</td>
+      <td>4.478404</td>
+      <td>4.664082</td>
+      <td>4.854839</td>
+      <td>8.041534</td>
+      <td>0.185655</td>
+    </tr>
+    <tr>
+      <th>num_keywords</th>
+      <td>39644.0</td>
+      <td>7.223767</td>
+      <td>1.909130</td>
+      <td>1.0</td>
+      <td>6.000000</td>
+      <td>7.000000</td>
+      <td>9.000000</td>
+      <td>10.000000</td>
+      <td>0.264285</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 
-### 2.3. Correlation Analysis
-A correlation heatmap of numerical features is computed and visualized using a heatmap.
-![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_8_0.png)
-From the heatmap, we can see that there are some features that are highly correlated with each other. For the linear models, we will remove the features that are highly correlated with each other to avoid multicollinearity.
+We also plot the boxplots of the nine selected features.
+![png](Final%20notebook%20images/Content%20feature%20statistics.png)
+We found that many of the features are significantly right-skewed and appear to have a lot of positive outliers. and except for the differences in titles and keywords, the remaining features are clustered in a very small interval. This suggests that most of the articles have similar vocabulary size and vocabulary type, which may be some kind of characteristic or consensus of news industry articles. 
 
-We also indentify the most correlated feature pairs.
-```
-    Top correlated feature pairs:
-    n_non_stop_unique_tokens  n_unique_tokens             0.999852
-    n_unique_tokens           n_non_stop_unique_tokens    0.999852
-    n_non_stop_words          n_unique_tokens             0.999572
-    n_unique_tokens           n_non_stop_words            0.999572
-    n_non_stop_unique_tokens  n_non_stop_words            0.999532
-    n_non_stop_words          n_non_stop_unique_tokens    0.999532
-    log_shares                boxcox_shares               0.981244
-    boxcox_shares             log_shares                  0.981244
-    kw_max_min                kw_avg_min                  0.940529
-    kw_avg_min                kw_max_min                  0.940529
-```
+### 2.4. Channel Distribution Analysis
+The dataset provides categories for each article, such as entertainment and technology news. Here is the distribution of channels
+![png](Final%20notebook%20images/Article%20Channel%20Distribution.png)
+It can be noticed that the website focused on WORLD, TECHNOLOGY, ENTERTAINMENT and BUSINESS news.
 
 
-### 2.4. Data Channel Analysis
-Here, we analyze the impact of different data channels on the number of article shares.
-![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_11_0.png)
-As shown in the chart, articles in the Lifestyle channel have the highest average number of shares, while those in the World channel have the lowest. The Socmed channel also has a relatively high number of shares, second only to the Lifestyle channel.
-
-### 2.4. Article Length Analysis
-Here, we analyze the relationship between article length and the number of shares. 
-![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_12_0.png)
-From the plot, we can see that most articles have a length between 0 and 2000, with relatively low share counts. When the article length is shorter (0-1000), the share count exhibits greater dispersion, with some articles achieving extremely high shares. As the article length increases (>2000), articles with high shares become less frequent.
-
-Therefore, we conclude that there is no clear linear relationship between article length and the number of shares. Although the data suggests that shorter articles are more likely to receive higher shares, there are still cases where longer articles achieve high share counts.
+### 2.5. Followers Analysis
 
 
-### 2.5. Selected Features Analysis
+
+### 2.6. Selected Features Analysis
 We select the following features we believe are important for predicting the number of shares. We draw boxplots for these features.
 ![png](EDA%20and%20Feature%20Engineering_files/EDA%20and%20Feature%20Engineering_13_0.png)
 Among them, n_tokens_content shows the greatest variation and has many outliers. In contrast, num_hrefs, num_imgs, and num_videos are relatively stable.
