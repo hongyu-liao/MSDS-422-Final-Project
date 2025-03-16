@@ -68,3 +68,6 @@ Anqi Gu, Evelyn Zhou, Han Zhang, Hongyu Liao, Yiwei Li
 
 ## Course
 MSDS 422 Practical Machine Learning (March 2025)
+
+## Detailed Report
+For a comprehensive analysis and in-depth discussion of this project, please refer to our [full report](https://docs.google.com/document/d/15T0iCwoS99bzEEkowhyqWuOXlaavKfaUunWkT1_wNRY/edit?tab=t.0).
