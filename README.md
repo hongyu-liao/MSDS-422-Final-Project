@@ -9,7 +9,7 @@ The dataset contains metadata from 39,797 articles published on Mashable.com, wi
 - Keyword metrics
 - Natural language processing metrics (sentiment, subjectivity)
 - Temporal features (day of week, weekend)
-- Social metrics (shares, author followers)
+- Social metrics (shares, author followers) - additional data we collected ourselves after recognizing that the original dataset focused too heavily on article structure while neglecting content factors
 
 ## Methodology
 
